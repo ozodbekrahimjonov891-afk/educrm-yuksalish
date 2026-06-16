@@ -1,5 +1,1 @@
-__pycache__/
-*.pyc
-educrm.db
-*.db
-.env
+web: python server.py
