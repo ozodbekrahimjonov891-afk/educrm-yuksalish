@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EduCRM">
+<title>EduCRM — Yuksalish</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0e1a; --surface:#111827; --surface2:#1a2235; --surface3:#1e2d45;
+  --accent:#3b82f6; --accent2:#06b6d4; --green:#10b981; --orange:#f59e0b;
+  --red:#ef4444; --purple:#8b5cf6; --text:#f1f5f9; --text2:#94a3b8;
+  --text3:#475569; --border:#1e3a5f; --border2:#243b55;
+  --bottom-h: 64px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100}
+.topbar-logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.logo-title{font-size:15px;font-weight:800}
+.logo-sub{font-size:10px;color:var(--accent2)}
+.topbar-add{width:36px;height:36px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(59,130,246,.4)}
+
+/* ── CONTENT ── */
+.content{padding:72px 0 80px;min-height:100vh}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottom-h);background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .2s;color:var(--text3);font-size:10px;font-weight:600;padding:6px 0}
+.nav-tab .tab-icon{font-size:22px;line-height:1}
+.nav-tab.active{color:var(--accent)}
+.nav-tab.active .tab-icon{transform:scale(1.1)}
+
+/* ── PAGES ── */
+.page{display:none;padding:0 12px}
+.page.active{display:block}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.stat-label{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:800;font-family:'Space Mono',monospace;letter-spacing:-1px}
+.stat-icon-bg{position:absolute;right:10px;top:10px;font-size:28px;opacity:.15}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:700}
+
+/* ── LIST ITEMS (mobile friendly) ── */
+.list-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;cursor:pointer;transition:background .15s}
+.list-item:last-child{border-bottom:none}
+.list-item:active{background:var(--surface2)}
+.item-av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.item-right{text-align:right;flex-shrink:0}
+
+/* ── STATUS ── */
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
+.badge.paid{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.badge.debt{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge.pending{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.3)}
+.badge.active{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+
+/* ── ATTENDANCE BUTTONS ── */
+.att-btns{display:flex;gap:6px}
+.att-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.att-btn.came{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.1)}
+.att-btn.missed{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1)}
+
+/* ── SEARCH ── */
+.search-wrap{padding:12px 12px 4px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:10px 14px}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:14px;flex:1;font-family:'Plus Jakarta Sans',sans-serif}
+.search-box input::placeholder{color:var(--text3)}
+
+/* ── MODAL (bottom sheet) ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 40px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-btns{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,.35)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:66px;left:12px;right:12px;background:var(--surface);border:1px solid var(--green);color:var(--text);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;display:none;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* ── SECTION TITLE ── */
+.section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;padding:12px 16px 6px}
+
+/* ── SWIPE DELETE ── */
+.item-delete{background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-left:8px}
+
+/* ── PROGRESS ── */
+.progress{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:6px}
+.progress-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .5s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-icon">E</div>
+    <div>
+      <div class="logo-title">EduCRM</div>
+      <div class="logo-sub">Yuksalish O'quv Markazi</div>
+    </div>
+  </div>
+  <button class="topbar-add" onclick="openAdd()" title="Qo'shish">+</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-home">
+    <div style="height:12px"></div>
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-icon-bg">🎓</div><div class="stat-label">O'quvchilar</div><div class="stat-value" style="color:var(--accent)" id="s-students">—</div></div>
+      <div class="stat-card"><div class="stat-icon-bg">💵</div><div class="stat-label">Daromad</div><div class="stat-value" style="color:var(--green)" id="s-income">—</div></div>
+      <div class="stat-card"><div class="stat-icon-bg">⚠️</div><div class="stat-label">Qarzdorlar</div><div class="stat-value" style="color:var(--orange)" id="s-debts">—</div></div>
+      <div class="stat-card"><div class="stat-icon-bg">👨‍🏫</div><div class="stat-label">O'qituvchilar</div><div class="stat-value" style="color:var(--purple)" id="s-teachers">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📋 Oxirgi o'quvchilar</div></div>
+      <div id="home-students"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">👥 Guruhlar</div></div>
+      <div id="home-groups"></div>
+    </div>
+  </div>
+
+  <!-- STUDENTS -->
+  <div class="page" id="page-students">
+    <div class="search-wrap">
+      <div class="search-box"><span>🔍</span><input type="text" placeholder="O'quvchi qidirish..." oninput="filterList('students-list',this.value)"></div>
+    </div>
+    <div id="students-list"></div>
+  </div>
+
+  <!-- ATTENDANCE -->
+  <div class="page" id="page-att">
+    <div class="section-title" id="att-date-title">Bugungi davomat</div>
+    <div id="att-list"></div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div class="page" id="page-pay">
+    <div style="height:12px"></div>
+    <div class="stats-grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat-card"><div class="stat-icon-bg">✅</div><div class="stat-label">To'langan</div><div class="stat-value" style="color:var(--green);font-size:20px" id="p-paid">0</div></div>
+      <div class="stat-card"><div class="stat-icon-bg">❌</div><div class="stat-label">Qarz</div><div class="stat-value" style="color:var(--red);font-size:20px" id="p-debt">0</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">💰 To'lovlar</div></div>
+      <div id="pay-list"></div>
+    </div>
+  </div>
+
+  <!-- MORE (Teachers, Groups, Reports) -->
+  <div class="page" id="page-more">
+    <div style="height:12px"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👨‍🏫 O'qituvchilar</div>
+        <button onclick="showTeacherModal()" style="background:var(--accent);border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Qo'shish</button>
+      </div>
+      <div id="teachers-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👥 Guruhlar</div>
+        <button onclick="showGroupModal()" style="background:var(--accent);border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Qo'shish</button>
+      </div>
+      <div id="groups-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📈 To'lov statistikasi</div></div>
+      <div style="padding:16px" id="pay-progress"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-tab active" onclick="showPage('home',this)">
+    <div class="tab-icon">📊</div>
+    <div>Bosh</div>
+  </div>
+  <div class="nav-tab" onclick="showPage('students',this)">
+    <div class="tab-icon">🎓</div>
+    <div>O'quvchilar</div>
+  </div>
+  <div class="nav-tab" onclick="showPage('att',this)">
+    <div class="tab-icon">✅</div>
+    <div>Davomat</div>
+  </div>
+  <div class="nav-tab" onclick="showPage('pay',this)">
+    <div class="tab-icon">💰</div>
+    <div>To'lovlar</div>
+  </div>
+  <div class="nav-tab" onclick="showPage('more',this)">
+    <div class="tab-icon">⚙️</div>
+    <div>Boshqa</div>
+  </div>
+</nav>
+
+<!-- MODAL: Student -->
+<div class="modal-overlay" id="modal-student">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👨‍🎓 Yangi o'quvchi</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Ism</label><input class="form-input" id="s-name" placeholder="Sardor"></div>
+      <div class="form-group"><label class="form-label">Familiya</label><input class="form-input" id="s-surname" placeholder="Yusupov"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="s-phone" type="tel" placeholder="+998 90 000 00 00"></div>
+    <div class="form-group"><label class="form-label">Guruh</label><select class="form-input" id="s-group"><option value="">-- Guruh tanlang --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">To'lov</label>
+        <select class="form-input" id="s-paystatus">
+          <option value="paid">✅ To'langan</option>
+          <option value="debt">❌ Qarz</option>
+          <option value="pending">⏳ Kutilmoqda</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Summa (so'm)</label><input class="form-input" id="s-amount" type="number" placeholder="500000"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('modal-student')">Bekor</button>
+      <button class="btn btn-primary" onclick="submitStudent()">✅ Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Teacher -->
+<div class="modal-overlay" id="modal-teacher">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👨‍🏫 Yangi o'qituvchi</div>
+    <div class="form-group"><label class="form-label">Ism Familiya</label><input class="form-input" id="t-name" placeholder="Jamshid Abdullayev"></div>
+    <div class="form-group"><label class="form-label">Fan</label><input class="form-input" id="t-subject" placeholder="Matematika"></div>
+    <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="t-phone" type="tel" placeholder="+998 90 000 00 00"></div>
+    <div class="form-group"><label class="form-label">Oylik maosh (so'm)</label><input class="form-input" id="t-salary" type="number" placeholder="3000000"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('modal-teacher')">Bekor</button>
+      <button class="btn btn-primary" onclick="submitTeacher()">✅ Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Group -->
+<div class="modal-overlay" id="modal-group">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👥 Yangi guruh</div>
+    <div class="form-group"><label class="form-label">Guruh nomi</label><input class="form-input" id="g-name" placeholder="Kimyo A1"></div>
+    <div class="form-group"><label class="form-label">Fan</label><input class="form-input" id="g-subject" placeholder="Kimyo"></div>
+    <div class="form-group"><label class="form-label">O'qituvchi</label><select class="form-input" id="g-teacher"><option value="">-- Tanlang --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Boshlanish</label><input class="form-input" id="g-start" type="time" value="09:00"></div>
+      <div class="form-group"><label class="form-label">Tugash</label><input class="form-input" id="g-end" type="time" value="10:30"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Kunlar</label>
+      <select class="form-input" id="g-days">
+        <option>Toq kunlar (D, Ch, J)</option>
+        <option>Juft kunlar (S, P, Sh)</option>
+        <option>Har kuni</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('modal-group')">Bekor</button>
+      <button class="btn btn-primary" onclick="submitGroup()">✅ Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-msg">Saqlandi!</span></div>
+
+<script>
+// ════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════
+const API = window.location.origin;  // Railway da avtomatik to'g'ri URL
+
+let currentPage = 'home';
+
+// ════════════════════════════════════
+//  API
+// ════════════════════════════════════
+async function api(method, path, body=null) {
+  try {
+    const res = await fetch(API + path, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : null,
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(()=>({}));
+      throw new Error(e.detail || e.error || `Xato ${res.status}`);
+    }
+    return res.json();
+  } catch(e) {
+    toast('❌ ' + e.message, 'err');
+    throw e;
+  }
+}
+
+// ════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  currentPage = name;
+  loadPage(name);
+}
+
+async function loadPage(name) {
+  if (name === 'home')     return loadHome();
+  if (name === 'students') return loadStudents();
+  if (name === 'att')      return loadAttendance();
+  if (name === 'pay')      return loadPayments();
+  if (name === 'more')     return loadMore();
+}
+
+// ════════════════════════════════════
+//  HOME
+// ════════════════════════════════════
+async function loadHome() {
+  const [stats, students, groups] = await Promise.all([
+    api('GET','/api/stats'),
+    api('GET','/api/students'),
+    api('GET','/api/groups'),
+  ]);
+
+  document.getElementById('s-students').textContent = stats.students;
+  document.getElementById('s-income').textContent   = fmt(stats.income);
+  document.getElementById('s-debts').textContent    = stats.debts;
+  document.getElementById('s-teachers').textContent = stats.teachers;
+
+  // Recent students
+  const hs = document.getElementById('home-students');
+  const recent = students.slice(0,5);
+  hs.innerHTML = recent.length ? recent.map(s => `
+    <div class="list-item">
+      <div class="item-av">${s.name[0]}</div>
+      <div class="item-info">
+        <div class="item-name">${s.name}</div>
+        <div class="item-sub">${s.group_name||'Guruhsiz'}</div>
+      </div>
+      <div><span class="badge ${s.pay_status}">${payLabel(s.pay_status)}</span></div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">🎓</div><div class="empty-text">O\'quvchi yo\'q</div></div>';
+
+  // Groups
+  const hg = document.getElementById('home-groups');
+  hg.innerHTML = groups.length ? groups.slice(0,5).map(g => `
+    <div class="list-item">
+      <div class="item-av" style="background:linear-gradient(135deg,var(--green),var(--accent2));font-size:18px">👥</div>
+      <div class="item-info">
+        <div class="item-name">${g.name}</div>
+        <div class="item-sub">${g.teacher_name||'—'} · ${g.student_count||0} o\'quvchi</div>
+      </div>
+      <div><span class="badge active">Faol</span></div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Guruh yo\'q</div></div>';
+}
+
+// ════════════════════════════════════
+//  STUDENTS
+// ════════════════════════════════════
+async function loadStudents() {
+  const students = await api('GET', '/api/students');
+  renderStudentList(students);
+}
+
+function renderStudentList(students) {
+  const el = document.getElementById('students-list');
+  el.innerHTML = students.length ? students.map(s => `
+    <div class="list-item" data-name="${s.name.toLowerCase()}">
+      <div class="item-av">${s.name[0]}</div>
+      <div class="item-info">
+        <div class="item-name">${s.name}</div>
+        <div class="item-sub">${s.phone||'—'} · ${s.group_name||'Guruhsiz'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="badge ${s.pay_status}">${payLabel(s.pay_status)}</span>
+        <button class="item-delete" onclick="delStudent(${s.id},event)">🗑</button>
+      </div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">🎓</div><div class="empty-text">Hali o\'quvchi yo\'q<br>+ tugmasini bosing</div></div>';
+}
+
+function filterList(containerId, val) {
+  const items = document.getElementById(containerId).querySelectorAll('.list-item');
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    item.style.display = name.includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+
+async function delStudent(id, e) {
+  e.stopPropagation();
+  if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
+  await api('DELETE', `/api/students/${id}`);
+  toast('🗑 O\'chirildi');
+  loadStudents();
+}
+
+// ════════════════════════════════════
+//  ATTENDANCE
+// ════════════════════════════════════
+async function loadAttendance() {
+  const att = await api('GET', '/api/attendance');
+  const today = new Date().toLocaleDateString('uz-UZ');
+  document.getElementById('att-date-title').textContent = `✅ Davomat — ${today}`;
+
+  const el = document.getElementById('att-list');
+  el.innerHTML = att.length ? att.map((a,i) => `
+    <div class="list-item" id="att-row-${a.student_id}">
+      <div class="item-av" style="background:linear-gradient(135deg,var(--accent2),var(--green));font-size:14px">${(a.student_name||'?')[0]}</div>
+      <div class="item-info">
+        <div class="item-name">${a.student_name}</div>
+        <div class="item-sub">${a.group_name||'—'}</div>
+      </div>
+      <div class="att-btns">
+        <button class="att-btn ${a.present===1?'came':''}" onclick="markAtt(${a.student_id},'${a.student_name}',true,this)">✅</button>
+        <button class="att-btn ${a.present===0?'missed':''}" onclick="markAtt(${a.student_id},'${a.student_name}',false,this)">❌</button>
+      </div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">O\'quvchi yo\'q</div></div>';
+}
+
+async function markAtt(id, name, present, btn) {
+  // Optimistic UI
+  const row = document.getElementById(`att-row-${id}`);
+  row.querySelectorAll('.att-btn').forEach(b => { b.classList.remove('came','missed'); });
+  btn.classList.add(present ? 'came' : 'missed');
+
+  await api('POST', '/api/attendance', { student_id: id, student_name: name, present });
+  toast(present ? '✅ Keldi' : '❌ Kelmadi');
+}
+
+// ════════════════════════════════════
+//  PAYMENTS
+// ════════════════════════════════════
+async function loadPayments() {
+  const payments = await api('GET', '/api/payments');
+  const paid = payments.filter(p=>p.status==='paid').reduce((a,b)=>a+(b.amount||0),0);
+  const debt = payments.filter(p=>p.status==='debt').reduce((a,b)=>a+(b.amount||0),0);
+  document.getElementById('p-paid').textContent = fmt(paid);
+  document.getElementById('p-debt').textContent = fmt(debt);
+
+  const el = document.getElementById('pay-list');
+  el.innerHTML = payments.length ? payments.map(p => `
+    <div class="list-item">
+      <div class="item-av" style="background:linear-gradient(135deg,var(--green),var(--accent));font-size:18px">💰</div>
+      <div class="item-info">
+        <div class="item-name">${p.student_name||'—'}</div>
+        <div class="item-sub">${p.group_name||'—'} · ${p.created_at||''}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Space Mono',monospace;font-size:13px;color:var(--green);font-weight:700">${fmt(p.amount)}</div>
+        <div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end">
+          <span class="badge ${p.status}">${payLabel(p.status)}</span>
+          ${p.status==='debt'?`<button style="background:var(--green);border:none;color:#fff;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="markPaid(${p.id})">To'landi</button>`:''}
+        </div>
+      </div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">💰</div><div class="empty-text">To\'lov yo\'q</div></div>';
+}
+
+async function markPaid(id) {
+  await api('PUT', `/api/payments/${id}/pay`);
+  toast('✅ To\'lov tasdiqlandi!');
+  loadPayments();
+}
+
+// ════════════════════════════════════
+//  MORE (Teachers + Groups + Reports)
+// ════════════════════════════════════
+async function loadMore() {
+  const [teachers, groups, payments] = await Promise.all([
+    api('GET','/api/teachers'),
+    api('GET','/api/groups'),
+    api('GET','/api/payments'),
+  ]);
+
+  // Teachers
+  document.getElementById('teachers-list').innerHTML = teachers.length
+    ? teachers.map(t => `
+      <div class="list-item">
+        <div class="item-av" style="background:linear-gradient(135deg,var(--purple),var(--accent2))">${t.name[0]}</div>
+        <div class="item-info">
+          <div class="item-name">${t.name}</div>
+          <div class="item-sub">${t.subject||'—'} · ${t.phone||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--green)">${fmt(t.salary)} so'm</div>
+          <button class="item-delete" onclick="delTeacher(${t.id},event)">🗑</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">👨‍🏫</div><div class="empty-text">O\'qituvchi yo\'q</div></div>';
+
+  // Groups
+  document.getElementById('groups-list').innerHTML = groups.length
+    ? groups.map(g => `
+      <div class="list-item">
+        <div class="item-av" style="background:linear-gradient(135deg,var(--orange),var(--red));font-size:18px">👥</div>
+        <div class="item-info">
+          <div class="item-name">${g.name}</div>
+          <div class="item-sub">${g.teacher_name||'—'} · ${g.start_time||'?'}–${g.end_time||'?'}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge active">${g.student_count||0} ta</span>
+          <br><button class="item-delete" style="margin-top:4px" onclick="delGroup(${g.id},event)">🗑</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Guruh yo\'q</div></div>';
+
+  // Payment progress
+  const paid = payments.filter(p=>p.status==='paid').reduce((a,b)=>a+(b.amount||0),0);
+  const total = payments.reduce((a,b)=>a+(b.amount||0),0);
+  const pct = total ? Math.round(paid/total*100) : 0;
+  document.getElementById('pay-progress').innerHTML = `
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:38px;font-weight:800;color:var(--green);font-family:'Space Mono',monospace">${pct}%</div>
+      <div style="font-size:13px;color:var(--text2)">To'lov bajarilishi</div>
+    </div>
+    <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:8px">
+      <span>✅ ${fmt(paid)} so'm</span><span>Jami: ${fmt(total)} so'm</span>
+    </div>`;
+}
+
+async function delTeacher(id, e) {
+  e.stopPropagation();
+  if (!confirm('O\'chirilsinmi?')) return;
+  await api('DELETE', `/api/teachers/${id}`);
+  toast('🗑 O\'chirildi');
+  loadMore();
+}
+
+async function delGroup(id, e) {
+  e.stopPropagation();
+  if (!confirm('O\'chirilsinmi?')) return;
+  await api('DELETE', `/api/groups/${id}`);
+  toast('🗑 O\'chirildi');
+  loadMore();
+}
+
+// ════════════════════════════════════
+//  MODALS
+// ════════════════════════════════════
+async function openAdd() {
+  if (currentPage === 'students' || currentPage === 'home') {
+    const groups = await api('GET', '/api/groups');
+    const sel = document.getElementById('s-group');
+    sel.innerHTML = '<option value="">-- Guruh tanlang --</option>' +
+      groups.map(g => `<option value="${g.id}" data-name="${g.name}">${g.name}</option>`).join('');
+    document.getElementById('modal-student').classList.add('open');
+  } else if (currentPage === 'more') {
+    showTeacherModal();
+  } else if (currentPage === 'att') {
+    toast('⚠️ Davomat sahifasida + tugmasi ishlamaydi', 'err');
+  } else if (currentPage === 'pay') {
+    toast('⚠️ To\'lov o\'quvchi qo\'shganda avtomatik yaratiladi', 'err');
+  }
+}
+
+async function showTeacherModal() {
+  document.getElementById('modal-teacher').classList.add('open');
+}
+
+async function showGroupModal() {
+  const teachers = await api('GET', '/api/teachers');
+  const sel = document.getElementById('g-teacher');
+  sel.innerHTML = '<option value="">-- O\'qituvchi tanlang --</option>' +
+    teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  document.getElementById('modal-group').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function submitStudent() {
+  const name = document.getElementById('s-name').value.trim();
+  const surname = document.getElementById('s-surname').value.trim();
+  if (!name) { toast('❌ Ism kiriting!','err'); return; }
+  const sel = document.getElementById('s-group');
+  const gid = sel.value;
+  const gname = gid ? sel.options[sel.selectedIndex].dataset.name : '';
+  await api('POST', '/api/students', {
+    name: name + (surname ? ' ' + surname : ''),
+    phone: document.getElementById('s-phone').value,
+    group_id: gid ? parseInt(gid) : null,
+    group_name: gname,
+    pay_status: document.getElementById('s-paystatus').value,
+    amount: parseInt(document.getElementById('s-amount').value) || 0,
+  });
+  closeModal('modal-student');
+  clearFields(['s-name','s-surname','s-phone','s-amount']);
+  toast('✅ O\'quvchi qo\'shildi!');
+  loadPage(currentPage);
+}
+
+async function submitTeacher() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) { toast('❌ Ism kiriting!','err'); return; }
+  await api('POST', '/api/teachers', {
+    name,
+    subject: document.getElementById('t-subject').value,
+    phone: document.getElementById('t-phone').value,
+    salary: parseInt(document.getElementById('t-salary').value) || 0,
+  });
+  closeModal('modal-teacher');
+  clearFields(['t-name','t-subject','t-phone','t-salary']);
+  toast('✅ O\'qituvchi qo\'shildi!');
+  loadMore();
+}
+
+async function submitGroup() {
+  const name = document.getElementById('g-name').value.trim();
+  if (!name) { toast('❌ Guruh nomini kiriting!','err'); return; }
+  const tSel = document.getElementById('g-teacher');
+  await api('POST', '/api/groups', {
+    name,
+    subject: document.getElementById('g-subject').value,
+    teacher_id: tSel.value ? parseInt(tSel.value) : null,
+    teacher_name: tSel.value ? tSel.options[tSel.selectedIndex].text : '',
+    days: document.getElementById('g-days').value,
+    start_time: document.getElementById('g-start').value,
+    end_time: document.getElementById('g-end').value,
+  });
+  closeModal('modal-group');
+  clearFields(['g-name','g-subject']);
+  toast('✅ Guruh qo\'shildi!');
+  loadMore();
+}
+
+// ════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════
+function fmt(n) { return Number(n||0).toLocaleString('uz-UZ'); }
+function payLabel(s) { return s==='paid'?'To\'langan':s==='debt'?'Qarz':'Kutilmoqda'; }
+function clearFields(ids) { ids.forEach(id => { const el=document.getElementById(id); if(el) el.value=''; }); }
+
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.style.borderColor = type==='err' ? 'var(--red)' : 'var(--green)';
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+loadHome();
+</script>
+</body>
+</html>
